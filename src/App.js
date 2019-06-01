@@ -1,48 +1,99 @@
 import React from 'react';
 import './App.css';
 
-class App extends React.Component {
+function App() {
+  return (
+    <div className="App">
+      <Calculator />
+    </div>
+  );
+}
+
+function add(x, y) {
+  return parseInt(x) + parseInt(y);
+}
+
+function subtract(x, y) {
+  return parseInt(x) - parseInt(y);
+}
+
+function multiply(x, y) {
+  return parseInt(x) * parseInt(y);
+}
+
+function divide(x, y) {
+  return parseInt(x) / parseInt(y);
+}
+
+class Calculator extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       expression: '',
-      value: '',
-      hasDecimal: false
+      prevValue: 0,
+      value: 0,
+      hasDecimal: false,
+      operation: null
     }
   }
   render() {
     return (
-      <div className="App">
+      <div className="Calculator">
         <ExpressionScreen expression={this.state.expression}/>
         <ValueScreen value={this.state.value}/>
         <CalcButtons 
           appendNum={this.appendNum} 
           addDecimal={this.addDecimal} 
           clearValue={this.clearValue}
-          addNum={this.addNum}
+          addOperation={this.addOperation}
+          evaluate={this.evaluate}
         />
       </div>
     );
   }
   addDecimal = (dec) => {
     if (!this.state.hasDecimal) {
-        this.setState({
-          value: this.state.value + dec,
-          hasDecimal: true
+        this.setState(function(prevState){
+          return {
+            value: prevState.value + dec,
+            hasDecimal: true
+          }
         })
     }
   }
   appendNum = (num) => {
-    this.setState({
-      value: this.state.value + num
+    this.setState(function(prevState, props) {
+      return {value: prevState.value === 0 ? num : prevState.value + num}
     })
   }
-  addNum = (exp) => {
-
+  addOperation = (opr, exp) => {
+    this.setState(function(prevState){
+      return {
+        expression: prevState.value.toString() + ' ' + exp,
+        value: 0,
+        prevValue: prevState.value,
+        hasDecimal: false,
+        operation: opr 
+      }
+    })
   }
   clearValue = () => {
     this.setState( {
-      value: ''
+      value: 0,
+      expression: '',
+      hasDecimal: false
+    })
+  }
+  evaluate = () => {
+    this.setState(function(prevState) {
+      console.log(prevState.operation);
+      console.log(prevState.prevValue);
+      console.log(prevState.value);
+      return {
+        value: prevState.operation(prevState.prevValue, prevState.value),
+        expression: '',
+        hasDecimal: false
+      }
     })
   }
 }
@@ -61,11 +112,11 @@ function CalcButtons(props) {
       <button className="num-button" id="seven" value="7" onClick={(e) => props.appendNum(e.target.value)}>7</button>
       <button className="num-button" id="eight" value="8" onClick={(e) => props.appendNum(e.target.value)}>8</button>
       <button className="num-button" id="nine" value="9" onClick={(e) => props.appendNum(e.target.value)}>9</button>
-      <button className="symbol-button" id="add" value="+" onClick={(e) => props.addOpr(e.target.value)}>+</button>
-      <button className="symbol-button" id="subtract">-</button>
-      <button className="symbol-button" id="multiply">x</button>
-      <button className="symbol-button" id="divide">/</button>
-      <button className="equals-button" id="equals">=</button>
+      <button className="symbol-button" id="add" value="+" onClick={(e) => props.addOperation(add, e.target.value)}>+</button>
+      <button className="symbol-button" id="subtract" value="-" onClick={(e) => props.addOperation(subtract, e.target.value)}>-</button>
+      <button className="symbol-button" id="multiply" value="x" onClick={(e) => props.addOperation(multiply, e.target.value)}>x</button>
+      <button className="symbol-button" id="divide" value="\" onClick={(e) => props.addOperation(divide, e.target.value)}>/</button>
+      <button className="equals-button" id="equals" value="=" onClick={props.evaluate}>=</button>
       <button className="clear-button" id="clear" onClick={props.clearValue}>AC</button>
     </div>
   );
@@ -74,11 +125,7 @@ function CalcButtons(props) {
 function ValueScreen(props) {
     return (
       <div id="val-screen">
-        <font>
-        {
-          props.value === '' ? '0' : props.value
-        }
-        </font>
+        <font>{props.value}</font>
       </div>
     );
 }
