@@ -10,7 +10,20 @@ html, body, #root {
   justify-content: center;
 }
 
-#screen {
+#exp-screen {
+  background-color: black;
+  color: white;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 5px;
+  outline: 5px solid black;
+  height: 30px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 20px;
+}
+
+#val-screen {
   background-color: black;
   color: white;
   display: flex;
