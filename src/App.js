@@ -13,23 +13,23 @@ function App() {
 function CalcButtons() {
   return (
     <div className="buttons">
-      <button id="period">.</button>
-      <button id="zero">0</button>
-      <button id="one">1</button>
-      <button id="two">2</button>
-      <button id="three">3</button>
-      <button id="four">4</button>
-      <button id="five">5</button>
-      <button id="six">6</button>
-      <button id="seven">7</button>
-      <button id="eight">8</button>
-      <button id="nine">9</button>
-      <button id="add">+</button>
-      <button id="subtract">-</button>
-      <button id="multiply">x</button>
-      <button id="divide">/</button>
-      <button id="equals">=</button>
-      <button id="clear">AC</button>
+      <button className="num-button" id="period">.</button>
+      <button className="num-button" id="zero">0</button>
+      <button className="num-button" id="one">1</button>
+      <button className="num-button" id="two">2</button>
+      <button className="num-button" id="three">3</button>
+      <button className="num-button" id="four">4</button>
+      <button className="num-button" id="five">5</button>
+      <button className="num-button" id="six">6</button>
+      <button className="num-button" id="seven">7</button>
+      <button className="num-button" id="eight">8</button>
+      <button className="num-button" id="nine">9</button>
+      <button className="symbol-button" id="add">+</button>
+      <button className="symbol-button" id="subtract">-</button>
+      <button className="symbol-button" id="multiply">x</button>
+      <button className="symbol-button" id="divide">/</button>
+      <button className="equals-button" id="equals">=</button>
+      <button className="clear-button" id="clear">AC</button>
     </div>
   );
 }
@@ -38,7 +38,7 @@ class CalcScreen extends React.Component {
   render() {
     return (
     <div id="screen">
-      <font>1432</font>
+      <font>14320</font>
     </div>
     );
   }
