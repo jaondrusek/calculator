@@ -10,19 +10,19 @@ function App() {
 }
 
 function add(x, y) {
-  return parseInt(x) + parseInt(y);
+  return parseFloat(x) + parseFloat(y);
 }
 
 function subtract(x, y) {
-  return parseInt(x) - parseInt(y);
+  return parseFloat(x) - parseFloat(y);
 }
 
 function multiply(x, y) {
-  return parseInt(x) * parseInt(y);
+  return parseFloat(x) * parseFloat(y);
 }
 
 function divide(x, y) {
-  return parseInt(x) / parseInt(y);
+  return parseFloat(x) / parseFloat(y);
 }
 
 class Calculator extends React.Component {
@@ -31,7 +31,8 @@ class Calculator extends React.Component {
     this.state = {
       expression: '',
       prevValue: 0,
-      value: 0,
+      rightHandVal: 0,
+      currValue: 0,
       hasDecimal: false,
       operation: null
     }
@@ -40,7 +41,7 @@ class Calculator extends React.Component {
     return (
       <div className="Calculator">
         <ExpressionScreen expression={this.state.expression}/>
-        <ValueScreen value={this.state.value}/>
+        <ValueScreen currValue={this.state.currValue}/>
         <CalcButtons 
           appendNum={this.appendNum} 
           addDecimal={this.addDecimal} 
@@ -55,23 +56,26 @@ class Calculator extends React.Component {
     if (!this.state.hasDecimal) {
         this.setState(function(prevState){
           return {
-            value: prevState.value + dec,
+            currValue: prevState.currValue + dec,
             hasDecimal: true
           }
         })
     }
   }
   appendNum = (num) => {
-    this.setState(function(prevState, props) {
-      return {value: prevState.value === 0 ? num : prevState.value + num}
+    this.setState(function(prevState) {
+      return {
+        currValue: prevState.currValue === 0 ? num : prevState.currValue + num,
+        rightHandVal: prevState.currValue === 0 ? num : prevState.currValue + num,
+      }
     })
   }
   addOperation = (opr, exp) => {
     this.setState(function(prevState){
       return {
-        expression: prevState.value.toString() + ' ' + exp,
-        value: 0,
-        prevValue: prevState.value,
+        expression: prevState.currValue.toString() + ' ' + exp,
+        currValue: 0,
+        prevValue: prevState.currValue,
         hasDecimal: false,
         operation: opr 
       }
@@ -79,18 +83,16 @@ class Calculator extends React.Component {
   }
   clearValue = () => {
     this.setState( {
-      value: 0,
+      currValue: 0,
       expression: '',
       hasDecimal: false
     })
   }
   evaluate = () => {
     this.setState(function(prevState) {
-      console.log(prevState.operation);
-      console.log(prevState.prevValue);
-      console.log(prevState.value);
       return {
-        value: prevState.operation(prevState.prevValue, prevState.value),
+        currValue: prevState.operation(prevState.prevValue, prevState.rightHandVal),
+        prevValue: prevState.operation(prevState.prevValue, prevState.rightHandVal),
         expression: '',
         hasDecimal: false
       }
@@ -101,7 +103,7 @@ class Calculator extends React.Component {
 function CalcButtons(props) {
   return (
     <div className="buttons">
-      <button className="num-button" id="period" value="." onClick={(e) => props.addDecimal(e.target.value)}>.</button>
+      <button className="num-button" id="period" value="." onClick={(e) => props.addDecimal(e.target.currValue)}>.</button>
       <button className="num-button" id="zero" value="0" onClick={(e) => props.appendNum(e.target.value)}>0</button>
       <button className="num-button" id="one" value="1" onClick={(e) => props.appendNum(e.target.value)}>1</button>
       <button className="num-button" id="two" value="2" onClick={(e) => props.appendNum(e.target.value)}>2</button>
@@ -125,7 +127,7 @@ function CalcButtons(props) {
 function ValueScreen(props) {
     return (
       <div id="val-screen">
-        <font>{props.value}</font>
+        <font>{props.currValue}</font>
       </div>
     );
 }
