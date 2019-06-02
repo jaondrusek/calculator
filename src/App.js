@@ -34,7 +34,8 @@ class Calculator extends React.Component {
       rightHandVal: 0,
       currValue: 0,
       hasDecimal: false,
-      operation: null
+      operation: null,
+      operationJustAdded: false
     }
   }
   render() {
@@ -65,36 +66,44 @@ class Calculator extends React.Component {
   appendNum = (num) => {
     this.setState(function(prevState) {
       return {
-        currValue: prevState.currValue === 0 ? num : prevState.currValue + num,
-        rightHandVal: prevState.currValue === 0 ? num : prevState.currValue + num,
+        currValue: prevState.currValue === 0 || prevState.operationJustAdded ? num : prevState.currValue + num,
+        rightHandVal: prevState.currValue === 0 || prevState.operationJustAdded ? num : prevState.currValue + num,
+        operationJustAdded: false
       }
     })
   }
   addOperation = (opr, exp) => {
     this.setState(function(prevState){
       return {
-        expression: prevState.currValue.toString() + ' ' + exp,
-        currValue: 0,
-        prevValue: prevState.currValue,
+        expression: prevState.rightHandVal.toString() + ' ' + exp,
+        prevValue: prevState.operationJustAdded ? prevState.prevValue : prevState.currValue,
         hasDecimal: false,
-        operation: opr 
+        operation: opr,
+        operationJustAdded: true
       }
     })
   }
   clearValue = () => {
     this.setState( {
       currValue: 0,
+      prevValue: 0,
+      rightHandVal: 0,
       expression: '',
-      hasDecimal: false
+      hasDecimal: false,
+      operation: null,
+      operationJustAdded: false
     })
   }
   evaluate = () => {
     this.setState(function(prevState) {
-      return {
-        currValue: prevState.operation(prevState.prevValue, prevState.rightHandVal),
-        prevValue: prevState.operation(prevState.prevValue, prevState.rightHandVal),
-        expression: '',
-        hasDecimal: false
+      if (prevState.operation !== null) {
+        return {
+          currValue: prevState.operation(prevState.prevValue, prevState.rightHandVal),
+          prevValue: prevState.operation(prevState.prevValue, prevState.rightHandVal),
+          expression: '',
+          hasDecimal: false,
+          operationJustAdded: true
+        }
       }
     })
   }
