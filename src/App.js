@@ -31,8 +31,8 @@ class Calculator extends React.Component {
     this.state = {
       expression: '',
       prevValue: 0,
-      rightHandVal: 0,
       currValue: 0,
+      realTotal: 0,
       hasDecimal: false,
       operation: null,
       operationJustAdded: false
@@ -55,31 +55,48 @@ class Calculator extends React.Component {
   }
   addDecimal = (dec) => {
     if (!this.state.hasDecimal) {
-        this.setState(function(prevState){
-          return {
-            currValue: prevState.currValue + dec,
-            hasDecimal: true
-          }
-        })
+      this.setState(function(prevState) {
+        let newValue =  prevState.currValue === 0 || prevState.operationJustAdded ? 0 + dec : prevState.currValue + dec;
+        return {
+          currValue: newValue,
+          operationJustAdded: false,
+          hasDecimal: true
+        }
+      })
     }
   }
   appendNum = (num) => {
     this.setState(function(prevState) {
+      let newValue =  prevState.currValue === 0 || prevState.operationJustAdded ? num : prevState.currValue + num;
       return {
-        currValue: prevState.currValue === 0 || prevState.operationJustAdded ? num : prevState.currValue + num,
-        rightHandVal: prevState.currValue === 0 || prevState.operationJustAdded ? num : prevState.currValue + num,
+        currValue: newValue,
         operationJustAdded: false
       }
     })
   }
   addOperation = (opr, exp) => {
     this.setState(function(prevState){
-      return {
-        expression: prevState.rightHandVal.toString() + ' ' + exp,
-        prevValue: prevState.operationJustAdded ? prevState.prevValue : prevState.currValue,
-        hasDecimal: false,
-        operation: opr,
-        operationJustAdded: true
+      if (!prevState.operationJustAdded) {
+        console.log("currValue: " + prevState.currValue);
+        console.log("prevValue: " + prevState.prevValue);
+        return {
+          expression: prevState.expression + " " + prevState.currValue.toString() + ' ' + exp,
+          prevValue: prevState.currValue,
+          hasDecimal: false,
+          operation: opr,
+          operationJustAdded: true
+        }
+      } else if (prevState.operation !== opr) {
+          let symbol_index = prevState.expression.length - 1;
+          let fixed_exp = prevState.expression.substr(0, symbol_index) + exp;
+          console.log(typeof fixed_exp);
+        return {
+          expression: fixed_exp,
+          prevValue: prevState.currValue,
+          hasDecimal: false,
+          operation: opr,
+          operationJustAdded: true
+        }
       }
     })
   }
@@ -87,7 +104,7 @@ class Calculator extends React.Component {
     this.setState( {
       currValue: 0,
       prevValue: 0,
-      rightHandVal: 0,
+      realTotal: 0,
       expression: '',
       hasDecimal: false,
       operation: null,
@@ -96,23 +113,25 @@ class Calculator extends React.Component {
   }
   evaluate = () => {
     this.setState(function(prevState) {
-      if (prevState.operation !== null) {
+      if (prevState.operation !== null && prevState.operationJustAdded === false) {
+        let calculatedValue = prevState.operation(prevState.prevValue, prevState.currValue);
         return {
-          currValue: prevState.operation(prevState.prevValue, prevState.rightHandVal),
-          prevValue: prevState.operation(prevState.prevValue, prevState.rightHandVal),
+          currValue: calculatedValue,
+          prevValue: prevState.currValue,
           expression: '',
-          hasDecimal: false,
-          operationJustAdded: true
+          hasDecimal: false
         }
       }
     })
+    console.log("currValue: " + this.state.currValue);
+    console.log("prevValue: " + this.state.prevValue);
   }
 }
 
 function CalcButtons(props) {
   return (
     <div className="buttons">
-      <button className="num-button" id="period" value="." onClick={(e) => props.addDecimal(e.target.currValue)}>.</button>
+      <button className="num-button" id="period" value="." onClick={(e) => props.addDecimal(e.target.value)}>.</button>
       <button className="num-button" id="zero" value="0" onClick={(e) => props.appendNum(e.target.value)}>0</button>
       <button className="num-button" id="one" value="1" onClick={(e) => props.appendNum(e.target.value)}>1</button>
       <button className="num-button" id="two" value="2" onClick={(e) => props.appendNum(e.target.value)}>2</button>
