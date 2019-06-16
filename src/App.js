@@ -19,13 +19,9 @@ class Calculator extends React.Component {
     super(props);
     this.state = {
       expression: '',
-      total: 0,
-      next: 0,
       displayValue: 0,
       hasDecimal: false,
-      operation: null,
       operationJustAdded: false,
-      fresh: true
     }
   }
   render() {
@@ -74,7 +70,6 @@ class Calculator extends React.Component {
         return {
           expression: prevState.expression + ' ' + prevState.displayValue + ' ' + opr,
           displayValue: 0,
-          operation: opr,
           hasDecimal: false,
           operationJustAdded: true
         }
@@ -83,7 +78,6 @@ class Calculator extends React.Component {
       this.setState(function(prevState) {
         return {
           expression: prevState.expression.slice(0, -1) + opr,
-          operation: opr,
         }
       });
     }
@@ -104,13 +98,9 @@ class Calculator extends React.Component {
     console.log('Cleared');
     this.setState({
       expression: '',
-      total: 0,
-      next: 0,
       displayValue: 0,
       hasDecimal: false,
-      operation: null,
       operationJustAdded: false,
-      fresh: true
     });
   }
 }
